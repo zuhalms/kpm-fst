@@ -109,7 +109,6 @@
                         <thead>
                             <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b bg-gray-50/30">
                                 <th class="py-5 px-8">Nama Kategori</th>
-                                <th class="py-5 px-4 text-center">Sub-Kategori</th>
                                 <th class="py-5 px-4 text-center">Total Dokumen</th>
                                 <th class="py-5 px-4 text-center">Status</th>
                                 <th class="py-5 px-8 text-right">Aksi</th>
@@ -125,19 +124,8 @@
                                         </div>
                                     </td>
                                     <td class="py-4 px-4 text-center">
-                                        <div class="flex flex-wrap justify-center gap-1.5">
-                                            @forelse($category->children as $child)
-                                                <span class="px-3 py-1 bg-[#F1F3F5] text-[#495057] rounded-lg font-bold text-[9px] uppercase border border-gray-200/50">
-                                                    {{ $child->name }}
-                                                </span>
-                                            @empty
-                                                <span class="text-[10px] text-gray-300 italic">Tidak ada sub</span>
-                                            @endforelse
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-4 text-center">
                                         <span class="px-4 py-1.5 bg-[#EBE4FF] text-[#916BFF] rounded-lg font-bold text-[10px] uppercase">
-                                            {{ $category->documents_count ?? 0 }} File
+                                            {{ $category->getTotalDocumentsCount() }} File
                                         </span>
                                     </td>
                                     <td class="py-4 px-4 text-center">

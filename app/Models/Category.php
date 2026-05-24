@@ -44,6 +44,21 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
+    /**
+     * METHOD: Hitung Total Dokumen (Langsung + Sub-Kategori)
+     */
+    public function getTotalDocumentsCount()
+    {
+        $count = $this->documents()->count();
+        
+        // Tambah dokumen dari semua sub-kategori
+        foreach ($this->children as $child) {
+            $count += $child->getTotalDocumentsCount();
+        }
+        
+        return $count;
+    }
+
     // Otomatis membuat slug saat menyimpan nama
     protected static function boot()
     {

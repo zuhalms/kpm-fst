@@ -14,11 +14,6 @@ class Document extends Model
         'tags', 'status', 'file_path', 'description'
     ];
 
-    // Casting agar Tags bisa dibaca sebagai array jika disimpan dalam format JSON
-    protected $casts = [
-        'tags' => 'array',
-    ];
-
     public function category()
     {
         return $this->belongsTo(Category::class);
