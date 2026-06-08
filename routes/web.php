@@ -7,10 +7,6 @@ use App\Models\Category;
 use App\Models\Document;
 use Illuminate\Support\Facades\Route;
 
-// ==========================================
-// ---       HALAMAN UTAMA & PUBLIK       ---
-// ==========================================
-
 Route::get('/', function () {
     return view('welcome', [
         'categories' => Category::orderBy('name', 'asc')->get(),
@@ -20,9 +16,8 @@ Route::get('/', function () {
     ]);
 });
 
-// ✅ Izinkan Publik untuk melakukan pencarian (index) dan melihat detail dokumen (show)
+// ✅ Rute Publik Index (Pencarian) tetap di atas karena tidak menggunakan parameter dinamis {}
 Route::get('documents', [DocumentController::class, 'index'])->name('documents.index');
-Route::get('documents/{document}', [DocumentController::class, 'show'])->name('documents.show');
 
 
 // ==========================================
@@ -52,18 +47,29 @@ Route::middleware('auth')->group(function () {
     // 2. Resource Kategori (Full Akses Admin)
     Route::resource('categories', CategoryController::class);
 
-    // 3. Manajemen Dokumen Khusus Admin (Urutan Sangat Ketat)
+    // =============================================================
+    // 3. Manajemen Dokumen Khusus Admin (Urutan Sempurna)
+    // =============================================================
     
-    // POSISI 1: Route Custom POST tanpa ID (Hapus Massal)
+    // POSISI 1: Resource Utama Dokumen diprioritaskan di dalam auth agar /create dibaca duluan
+    Route::resource('documents', DocumentController::class)->except(['index', 'show']);
+
+    // POSISI 2: Route Custom POST tanpa ID (Hapus Massal)
     Route::post('documents/destroy-multiple', [DocumentController::class, 'destroyMultiple'])
         ->name('documents.destroy-multiple');
 
-    // POSISI 2: Route Custom dengan ID (Download)
+    // POSISI 3: Route Custom dengan ID (Download)
     Route::get('documents/{document}/download', [DocumentController::class, 'download'])
         ->name('documents.download');
-    
-    // POSISI 3: Resource Utama Dokumen (Kecuali index dan show karena sudah diambil publik)
-    Route::resource('documents', DocumentController::class)->except(['index', 'show']);
 });
 
 require __DIR__.'/auth.php';
+
+
+// ==========================================
+// ---      RUTE DINAMIS / PARAMETER      ---
+// ==========================================
+
+// ✅ Pindahkan rute publik 'show' ke paling bawah setelah semua rute admin selesai diperiksa.
+// Ini mencegah kata 'create' atau 'destroy-multiple' tidak sengaja termakan oleh parameter {document}
+Route::get('documents/{document}', [DocumentController::class, 'show'])->name('documents.show');
